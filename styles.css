@@ -431,4 +431,15 @@ h2 { margin-bottom: 0; }
 .shopping-item {
   touch-action: none;
 }
+
+.drag-handle {
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.shopping-item.dragging {
+  opacity: 0.45;
+  background: rgba(56, 189, 248, 0.08);
+}
 }

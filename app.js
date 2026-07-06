@@ -132,7 +132,7 @@ function render() {
 
   for (const item of groceryItems) {
     const li = document.createElement('li');
-    li.draggable = true;
+
     li.dataset.id = item.id;
     li.className = `shopping-item${item.purchased ? ' purchased' : ''}`;
     li.innerHTML = `
@@ -150,14 +150,9 @@ function render() {
 
   <button class="remove-btn" type="button" aria-label="Remove item">×</button>
 `;
-li.addEventListener('dragstart', () => {
-  li.classList.add('dragging');
-});
 
-li.addEventListener('dragend', () => {
-  li.classList.remove('dragging');
-  saveNewOrder();
-});
+enableTouchDrag(li);
+
 
     const purchasedCheckbox = li.querySelector('.purchased-checkbox');
     purchasedCheckbox.checked = Boolean(item.purchased);
@@ -196,46 +191,50 @@ li.addEventListener('dragend', () => {
   grandTotal.textContent = centsToInput(calculateGrandTotalCents());
 }
 
-itemsList.addEventListener('dragover', (event) => {
-  event.preventDefault();
 
-  const draggingItem = document.querySelector('.dragging');
-  const afterElement = getDragAfterElement(itemsList, event.clientY);
+let draggedItem = null;
 
-  if (!draggingItem) return;
+function enableTouchDrag(li) {
+  const handle = li.querySelector('.drag-handle');
 
-  if (afterElement == null) {
-    itemsList.appendChild(draggingItem);
-  } else {
-    itemsList.insertBefore(draggingItem, afterElement);
-  }
-});
+  handle.addEventListener('pointerdown', (event) => {
+    event.preventDefault();
 
-function getDragAfterElement(container, y) {
-  const draggableElements = [...container.querySelectorAll('.shopping-item:not(.dragging)')];
+    draggedItem = li;
+    li.classList.add('dragging');
 
-  return draggableElements.reduce((closest, child) => {
-    const box = child.getBoundingClientRect();
-    const offset = y - box.top - box.height / 2;
+    handle.setPointerCapture(event.pointerId);
+  });
 
-    if (offset < 0 && offset > closest.offset) {
-      return { offset, element: child };
+  handle.addEventListener('pointermove', (event) => {
+    if (!draggedItem) return;
+
+    const afterElement = getDragAfterElement(itemsList, event.clientY);
+
+    if (afterElement == null) {
+      itemsList.appendChild(draggedItem);
+    } else {
+      itemsList.insertBefore(draggedItem, afterElement);
     }
+  });
 
-    return closest;
-  }, { offset: Number.NEGATIVE_INFINITY }).element;
-}
+  handle.addEventListener('pointerup', () => {
+    if (!draggedItem) return;
 
-function saveNewOrder() {
-  const orderedIds = [...itemsList.querySelectorAll('.shopping-item')]
-    .map(item => item.dataset.id);
+    draggedItem.classList.remove('dragging');
+    draggedItem = null;
 
-  groceryItems = orderedIds
-    .map(id => groceryItems.find(item => String(item.id) === String(id)))
-    .filter(Boolean);
+    saveNewOrder();
+  });
 
-  saveItems();
-  render();
+  handle.addEventListener('pointercancel', () => {
+    if (!draggedItem) return;
+
+    draggedItem.classList.remove('dragging');
+    draggedItem = null;
+
+    saveNewOrder();
+  });
 }
 
 addForm.addEventListener('submit', (event) => {
