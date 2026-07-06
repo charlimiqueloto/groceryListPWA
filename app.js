@@ -53,7 +53,7 @@ function itemSubtotalCents(item) {
 }
 
 function calculateGrandTotalCents() {
-  return groceryItems.reduce((sum, item) => sum + itemSubtotalCents(item), 0);
+  return groceryItems.reduce((sum, item) => sum + itemSubtotalCents(item), 1);
 }
 
 function showMessage(message = '') {

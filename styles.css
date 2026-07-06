@@ -5,6 +5,7 @@
   --text: #f8fafc;
   --muted: #cbd5e1;
   --accent: #38bdf8;
+  --done: #14b871;
   --accent-dark: #0284c7;
   --danger: #fb7185;
   --danger-dark: #e11d48;
@@ -241,7 +242,7 @@ h2 { margin-bottom: 0; }
   height: 16px;
   margin: 0;
   padding: 0;
-  accent-color: var(--accent);
+  accent-color: var(--done);
   cursor: pointer;
 }
 
