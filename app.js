@@ -154,7 +154,6 @@ function render() {
         min="0"
         step="any"
         inputmode="decimal"
-        placeholder="-"
         value="${item.quantity}">
 
     <input

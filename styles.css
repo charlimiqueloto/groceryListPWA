@@ -96,7 +96,7 @@ h1 {
 .list-card {
   margin-top: 22px;
   border-radius: var(--radius);
-  padding: 24px;
+  padding: 10px;
 }
 
 label {
@@ -187,7 +187,8 @@ h2 { margin-bottom: 0; }
 
 .items-list {
   list-style: none;
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 0;
   margin: 0;
   padding: 0;
@@ -195,8 +196,8 @@ h2 { margin-bottom: 0; }
 
 /* Header da lista */
 .list-header {
-  display: grid;
-  grid-template-columns: 22px minmax(120px, 1fr) 54px 92px 84px 32px;
+  display: flex;
+  flex-direction: row;
   align-items: center;
   gap: 8px;
   padding: 0 0 8px;
@@ -220,7 +221,7 @@ h2 { margin-bottom: 0; }
 
 /* Linha do item */
 .shopping-item {
-  display: grid;
+  display: flex;
   grid-template-columns: 22px minmax(120px, 1fr) 54px 92px 84px 32px;
   align-items: center;
   gap: 8px;
@@ -315,12 +316,12 @@ h2 { margin-bottom: 0; }
 }
 
 .quantity-input {
-  width: 100%;
+  width: 30%;
   text-align: center;
 }
 
 .price-input {
-  width: 100%;
+  width: 30%;
   text-align: right;
 }
 
