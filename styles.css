@@ -198,9 +198,7 @@ h2 { margin-bottom: 0; }
   display: flex;
   grid-template-columns: 22px minmax(90px, auto) minmax(24px, 1fr) auto auto auto 32px;
   align-items: center;
-  gap: 8px;
-  min-height: 36px;
-  padding: 4px 0;
+  min-height: 40px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.14);
   font-size: 0.95rem;
   justify-content: space-between;
@@ -235,7 +233,7 @@ h2 { margin-bottom: 0; }
 }
 
 .item-name {
-  min-width: 0;
+  min-width: 40px;
   margin: 0;
   padding: 0;
   border: 0;
@@ -314,7 +312,7 @@ h2 { margin-bottom: 0; }
 }
 
 .price-input {
-  width: 86px;
+  /*width: 86px;*/
   text-align: right;
 }
 
