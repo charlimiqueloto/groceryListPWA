@@ -15,6 +15,8 @@ const installBtn = document.querySelector('#installBtn');
 
 let groceryItems = loadItems();
 let deferredPrompt;
+let draggedItem = null;
+let lastTouchY = 0;
 
 function loadItems() {
   try {
@@ -53,7 +55,7 @@ function itemSubtotalCents(item) {
 }
 
 function calculateGrandTotalCents() {
-  return groceryItems.reduce((sum, item) => sum + itemSubtotalCents(item), 1);
+  return groceryItems.reduce((sum, item) => sum + itemSubtotalCents(item), 0);
 }
 
 function showMessage(message = '') {
@@ -124,35 +126,117 @@ function startEditingItemName(id, listItem) {
   });
 }
 
+function getDragAfterElement(container, y) {
+  const draggableElements = [...container.querySelectorAll('.shopping-item:not(.dragging)')];
+
+  return draggableElements.reduce((closest, child) => {
+    const box = child.getBoundingClientRect();
+    const offset = y - box.top - box.height / 2;
+
+    if (offset < 0 && offset > closest.offset) {
+      return { offset, element: child };
+    }
+
+    return closest;
+  }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
+
+function moveDraggedItem(y) {
+  if (!draggedItem) return;
+
+  const afterElement = getDragAfterElement(itemsList, y);
+
+  if (afterElement == null) {
+    itemsList.appendChild(draggedItem);
+  } else {
+    itemsList.insertBefore(draggedItem, afterElement);
+  }
+}
+
+function saveNewOrder() {
+  const orderedIds = [...itemsList.querySelectorAll('.shopping-item')]
+    .map((item) => item.dataset.id);
+
+  groceryItems = orderedIds
+    .map((id) => groceryItems.find((item) => String(item.id) === String(id)))
+    .filter(Boolean);
+
+  saveItems();
+}
+
+function endDrag() {
+  if (!draggedItem) return;
+
+  draggedItem.classList.remove('dragging');
+  itemsList.classList.remove('drag-active');
+  document.body.classList.remove('is-dragging');
+  draggedItem = null;
+  saveNewOrder();
+}
+
+function enableTouchDrag(li) {
+  const handle = li.querySelector('.drag-handle');
+
+  const startDrag = (event) => {
+    const touch = event.touches ? event.touches[0] : event;
+    if (!touch) return;
+
+    event.preventDefault();
+    draggedItem = li;
+    lastTouchY = touch.clientY;
+    li.classList.add('dragging');
+    itemsList.classList.add('drag-active');
+    document.body.classList.add('is-dragging');
+  };
+
+  const moveDrag = (event) => {
+    if (!draggedItem) return;
+
+    const touch = event.touches ? event.touches[0] : event;
+    if (!touch) return;
+
+    event.preventDefault();
+    lastTouchY = touch.clientY;
+    moveDraggedItem(lastTouchY);
+  };
+
+  handle.addEventListener('pointerdown', (event) => {
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    startDrag(event);
+    handle.setPointerCapture?.(event.pointerId);
+  });
+
+  handle.addEventListener('pointermove', moveDrag);
+  handle.addEventListener('pointerup', endDrag);
+  handle.addEventListener('pointercancel', endDrag);
+
+  handle.addEventListener('touchstart', startDrag, { passive: false });
+  document.addEventListener('touchmove', moveDrag, { passive: false });
+  document.addEventListener('touchend', endDrag);
+  document.addEventListener('touchcancel', endDrag);
+}
+
 function render() {
   itemsList.innerHTML = '';
   emptyState.hidden = groceryItems.length > 0;
   clearBtn.hidden = groceryItems.length === 0;
 
-
   for (const item of groceryItems) {
     const li = document.createElement('li');
-
-    li.dataset.id = item.id;
     li.className = `shopping-item${item.purchased ? ' purchased' : ''}`;
+    li.dataset.id = item.id;
+
     li.innerHTML = `
-    <button class="drag-handle" type="button" aria-label="Drag item">☰</button>
+      <button class="drag-handle" type="button" aria-label="Move item">☰</button>
+      <input class="purchased-checkbox" type="checkbox" aria-label="Mark item as purchased" ${item.purchased ? 'checked' : ''}>
+      <button class="item-name" type="button" title="Click to edit item name"></button>
+      <input class="quantity-input" type="number" min="0" step="any" inputmode="decimal" placeholder="-" value="${item.quantity}">
+      <input class="price-input" type="text" inputmode="numeric" placeholder="" value="${centsToPriceInput(item.priceCents)}">
+      <span class="item-subtotal">${centsToInput(itemSubtotalCents(item))}</span>
+      <button class="remove-btn" type="button" aria-label="Remove item">×</button>
+    `;
 
-  <input class="purchased-checkbox" type="checkbox" aria-label="Mark item as purchased" ${item.purchased ? 'checked' : ''}>
-
-  <button class="item-name" type="button" title="Click to edit item name"></button>
-
-  <input class="quantity-input" type="number" min="0" step="any" inputmode="decimal" placeholder="-" value="${item.quantity}">
-
-  <input class="price-input" type="text" inputmode="numeric" placeholder="" value="${centsToPriceInput(item.priceCents)}">
-
-  <span class="item-subtotal">${centsToInput(itemSubtotalCents(item))}</span>
-
-  <button class="remove-btn" type="button" aria-label="Remove item">×</button>
-`;
-
-enableTouchDrag(li);
-
+    enableTouchDrag(li);
 
     const purchasedCheckbox = li.querySelector('.purchased-checkbox');
     purchasedCheckbox.checked = Boolean(item.purchased);
@@ -189,52 +273,6 @@ enableTouchDrag(li);
   }
 
   grandTotal.textContent = centsToInput(calculateGrandTotalCents());
-}
-
-
-let draggedItem = null;
-
-function enableTouchDrag(li) {
-  const handle = li.querySelector('.drag-handle');
-
-  handle.addEventListener('pointerdown', (event) => {
-    event.preventDefault();
-
-    draggedItem = li;
-    li.classList.add('dragging');
-
-    handle.setPointerCapture(event.pointerId);
-  });
-
-  handle.addEventListener('pointermove', (event) => {
-    if (!draggedItem) return;
-
-    const afterElement = getDragAfterElement(itemsList, event.clientY);
-
-    if (afterElement == null) {
-      itemsList.appendChild(draggedItem);
-    } else {
-      itemsList.insertBefore(draggedItem, afterElement);
-    }
-  });
-
-  handle.addEventListener('pointerup', () => {
-    if (!draggedItem) return;
-
-    draggedItem.classList.remove('dragging');
-    draggedItem = null;
-
-    saveNewOrder();
-  });
-
-  handle.addEventListener('pointercancel', () => {
-    if (!draggedItem) return;
-
-    draggedItem.classList.remove('dragging');
-    draggedItem = null;
-
-    saveNewOrder();
-  });
 }
 
 addForm.addEventListener('submit', (event) => {

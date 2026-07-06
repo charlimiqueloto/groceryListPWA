@@ -26,6 +26,12 @@ body {
   color: var(--text);
 }
 
+body.is-dragging {
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: none;
+}
+
 button,
 input { font: inherit; }
 
@@ -41,7 +47,9 @@ button:hover { transform: translateY(-1px); }
 button:active { transform: translateY(0); }
 
 .item-name:hover,
-.item-name:active { transform: none; }
+.item-name:active,
+.drag-handle:hover,
+.drag-handle:active { transform: none; }
 
 .app-shell {
   width: min(960px, calc(100% - 32px));
@@ -195,13 +203,15 @@ h2 { margin-bottom: 0; }
   padding: 0;
 }
 
-/* Header da lista */
-.list-header {
-  display: flex;
-  justify-content: space-between;
-  flex-direction: row;
+.list-header,
+.shopping-item {
+  display: grid;
+  grid-template-columns: 28px 22px minmax(90px, 1fr) 52px 92px 86px 32px;
   align-items: center;
   gap: 8px;
+}
+
+.list-header {
   padding: 0 0 8px;
   margin-bottom: 2px;
   color: var(--muted);
@@ -212,29 +222,42 @@ h2 { margin-bottom: 0; }
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.header-qty {
-  text-align: center;
-}
-
+.header-qty { text-align: center; }
 .header-price,
-.header-subtotal {
-  text-align: right;
-}
+.header-subtotal { text-align: right; }
 
-/* Linha do item */
 .shopping-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 8px;
   min-height: 38px;
   padding: 3px 0;
   border-bottom: 1px dotted rgba(255, 255, 255, 0.18);
   font-size: 0.95rem;
 }
 
-.shopping-item:first-child {
-  border-top: 0;
+.shopping-item.dragging {
+  opacity: 0.6;
+  background: rgba(56, 189, 248, 0.12);
+  border-radius: 12px;
+}
+
+.drag-handle {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 1.05rem;
+  cursor: grab;
+  opacity: 0.85;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .purchased-checkbox {
@@ -318,12 +341,12 @@ h2 { margin-bottom: 0; }
 }
 
 .quantity-input {
-  width: 15%;
+  width: 100%;
   text-align: center;
 }
 
 .price-input {
-  width: 20%;
+  width: 100%;
   text-align: right;
 }
 
@@ -390,12 +413,13 @@ h2 { margin-bottom: 0; }
     flex-direction: column;
   }
 
-  /*.list-header,
+  .list-header,
   .shopping-item {
-    grid-template-columns: 22px minmax(90px, 1fr) 48px 82px 32px;
-  }*/
+    grid-template-columns: 26px 20px minmax(74px, 1fr) 44px 76px 28px;
+    gap: 6px;
+  }
 
-  .header-subtotal,
+  .list-header .header-subtotal,
   .item-subtotal {
     display: none;
   }
@@ -407,39 +431,4 @@ h2 { margin-bottom: 0; }
   .total-bar strong {
     font-size: 1.45rem;
   }
-
-  .drag-handle {
-  width: 26px;
-  height: 26px;
-  padding: 0;
-  background: transparent;
-  color: var(--muted);
-  font-size: 1rem;
-  cursor: grab;
-  opacity: 0.7;
-}
-
-.drag-handle:active {
-  cursor: grabbing;
-}
-
-.shopping-item.dragging {
-  opacity: 0.45;
-  background: rgba(56, 189, 248, 0.08);
-}
-
-.shopping-item {
-  touch-action: none;
-}
-
-.drag-handle {
-  touch-action: none;
-  user-select: none;
-  -webkit-user-select: none;
-}
-
-.shopping-item.dragging {
-  opacity: 0.45;
-  background: rgba(56, 189, 248, 0.08);
-}
 }

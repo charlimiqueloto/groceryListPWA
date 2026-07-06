@@ -1,6 +1,5 @@
 <!doctype html>
 <html lang="en">
-
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -9,7 +8,6 @@
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="stylesheet" href="styles.css" />
 </head>
-
 <body>
   <main class="app-shell">
     <section class="hero" aria-labelledby="app-title">
@@ -41,13 +39,15 @@
         <p>Your grocery list is empty.</p>
         <span>Add your first item above.</span>
       </div>
-      <div class="list-header">
-        <div class="header-name"></div>
-        <div class="header-name"></div>
-        <div class="header-name"></div>
-        <div class="header-qty">Qty</div>
-        <div class="header-price">Price</div>
-        <div class="header-remove"></div>
+
+      <div class="list-header" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span>Item</span>
+        <span class="header-qty">Qty</span>
+        <span class="header-price">Price</span>
+        <span class="header-subtotal">Subtotal</span>
+        <span></span>
       </div>
 
       <ul id="itemsList" class="items-list"></ul>
@@ -61,5 +61,4 @@
 
   <script src="app.js" defer></script>
 </body>
-
 </html>
