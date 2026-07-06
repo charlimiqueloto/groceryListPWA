@@ -133,23 +133,39 @@ function render() {
     const li = document.createElement('li');
     li.className = `shopping-item${item.purchased ? ' purchased' : ''}`;
     li.innerHTML = `
-      <input class="purchased-checkbox" type="checkbox" aria-label="Mark item as purchased" ${item.purchased ? 'checked' : ''}>
-      <button class="item-name" type="button" title="Click to edit item name"></button>
-      <span class="line-fill" aria-hidden="true"></span>
+    <input
+        class="purchased-checkbox"
+        type="checkbox"
+        aria-label="Mark item as purchased"
+        ${item.purchased ? "checked" : ""}
+    >
 
-      <label class="inline-field quantity-field">
-        <span>Qty:</span>
-        <input class="quantity-input" type="number" min="0" step="any" inputmode="decimal" placeholder="-" value="${item.quantity}">
-      </label>
+    <button
+        class="item-name"
+        type="button"
+        title="Click to edit item name">
+    </button>
 
-      <label class="inline-field price-field">
-        <span>Price:</span>
-        <input class="price-input" type="text" inputmode="numeric" placeholder="" value="${centsToPriceInput(item.priceCents)}">
-      </label>
+    <span class="line-fill"></span>
 
-      <span class="item-subtotal">${centsToInput(itemSubtotalCents(item))}</span>
-      <button class="remove-btn" type="button" aria-label="Remove item">×</button>
-    `;
+    <input
+        class="quantity-input"
+        type="number"
+        min="0"
+        step="any"
+        inputmode="decimal"
+        placeholder="-"
+        value="${item.quantity}">
+
+    <input
+        class="price-input"
+        type="text"
+        inputmode="numeric"
+        placeholder=""
+        value="${centsToPriceInput(item.priceCents)}">
+
+    <button class="remove-btn" type="button">×</button>
+`;
 
     const purchasedCheckbox = li.querySelector('.purchased-checkbox');
     purchasedCheckbox.checked = Boolean(item.purchased);
