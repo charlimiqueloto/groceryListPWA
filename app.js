@@ -129,42 +129,35 @@ function render() {
   emptyState.hidden = groceryItems.length > 0;
   clearBtn.hidden = groceryItems.length === 0;
 
+
   for (const item of groceryItems) {
     const li = document.createElement('li');
+    li.draggable = true;
+    li.dataset.id = item.id;
     li.className = `shopping-item${item.purchased ? ' purchased' : ''}`;
     li.innerHTML = `
-    <input
-        class="purchased-checkbox"
-        type="checkbox"
-        aria-label="Mark item as purchased"
-        ${item.purchased ? "checked" : ""}
-    >
+    <button class="drag-handle" type="button" aria-label="Drag item">☰</button>
 
-    <button
-        class="item-name"
-        type="button"
-        title="Click to edit item name">
-    </button>
+  <input class="purchased-checkbox" type="checkbox" aria-label="Mark item as purchased" ${item.purchased ? 'checked' : ''}>
 
-    <span class="line-fill"></span>
+  <button class="item-name" type="button" title="Click to edit item name"></button>
 
-    <input
-        class="quantity-input"
-        type="number"
-        min="0"
-        step="any"
-        inputmode="decimal"
-        value="${item.quantity}">
+  <input class="quantity-input" type="number" min="0" step="any" inputmode="decimal" placeholder="-" value="${item.quantity}">
 
-    <input
-        class="price-input"
-        type="text"
-        inputmode="numeric"
-        placeholder=""
-        value="${centsToPriceInput(item.priceCents)}">
+  <input class="price-input" type="text" inputmode="numeric" placeholder="" value="${centsToPriceInput(item.priceCents)}">
 
-    <button class="remove-btn" type="button">×</button>
+  <span class="item-subtotal">${centsToInput(itemSubtotalCents(item))}</span>
+
+  <button class="remove-btn" type="button" aria-label="Remove item">×</button>
 `;
+li.addEventListener('dragstart', () => {
+  li.classList.add('dragging');
+});
+
+li.addEventListener('dragend', () => {
+  li.classList.remove('dragging');
+  saveNewOrder();
+});
 
     const purchasedCheckbox = li.querySelector('.purchased-checkbox');
     purchasedCheckbox.checked = Boolean(item.purchased);
@@ -201,6 +194,48 @@ function render() {
   }
 
   grandTotal.textContent = centsToInput(calculateGrandTotalCents());
+}
+
+itemsList.addEventListener('dragover', (event) => {
+  event.preventDefault();
+
+  const draggingItem = document.querySelector('.dragging');
+  const afterElement = getDragAfterElement(itemsList, event.clientY);
+
+  if (!draggingItem) return;
+
+  if (afterElement == null) {
+    itemsList.appendChild(draggingItem);
+  } else {
+    itemsList.insertBefore(draggingItem, afterElement);
+  }
+});
+
+function getDragAfterElement(container, y) {
+  const draggableElements = [...container.querySelectorAll('.shopping-item:not(.dragging)')];
+
+  return draggableElements.reduce((closest, child) => {
+    const box = child.getBoundingClientRect();
+    const offset = y - box.top - box.height / 2;
+
+    if (offset < 0 && offset > closest.offset) {
+      return { offset, element: child };
+    }
+
+    return closest;
+  }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
+
+function saveNewOrder() {
+  const orderedIds = [...itemsList.querySelectorAll('.shopping-item')]
+    .map(item => item.dataset.id);
+
+  groceryItems = orderedIds
+    .map(id => groceryItems.find(item => String(item.id) === String(id)))
+    .filter(Boolean);
+
+  saveItems();
+  render();
 }
 
 addForm.addEventListener('submit', (event) => {

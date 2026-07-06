@@ -407,4 +407,28 @@ h2 { margin-bottom: 0; }
   .total-bar strong {
     font-size: 1.45rem;
   }
+
+  .drag-handle {
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 1rem;
+  cursor: grab;
+  opacity: 0.7;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.shopping-item.dragging {
+  opacity: 0.45;
+  background: rgba(56, 189, 248, 0.08);
+}
+
+.shopping-item {
+  touch-action: none;
+}
 }
