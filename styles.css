@@ -223,7 +223,7 @@ h2 { margin-bottom: 0; }
 /* Linha do item */
 .shopping-item {
   display: flex;
-  grid-template-columns: 22px minmax(120px, 1fr) 54px 92px 84px 32px;
+  justify-content: space-between;
   align-items: center;
   gap: 8px;
   min-height: 38px;
@@ -317,12 +317,12 @@ h2 { margin-bottom: 0; }
 }
 
 .quantity-input {
-  width: 30%;
+  width: 15%;
   text-align: center;
 }
 
 .price-input {
-  width: 30%;
+  width: 20%;
   text-align: right;
 }
 
