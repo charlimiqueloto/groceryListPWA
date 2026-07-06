@@ -197,6 +197,7 @@ h2 { margin-bottom: 0; }
 /* Header da lista */
 .list-header {
   display: flex;
+  justify-content: space-between;
   flex-direction: row;
   align-items: center;
   gap: 8px;
@@ -388,10 +389,10 @@ h2 { margin-bottom: 0; }
     flex-direction: column;
   }
 
-  .list-header,
+  /*.list-header,
   .shopping-item {
     grid-template-columns: 22px minmax(90px, 1fr) 48px 82px 32px;
-  }
+  }*/
 
   .header-subtotal,
   .item-subtotal {
