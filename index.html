@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>Grocery List</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <section class="hero" aria-labelledby="app-title">
+      <div>
+        <p class="eyebrow">Offline PWA</p>
+        <h1 id="app-title">Grocery List</h1>
+        <p class="subtitle">Build your list at home, then add quantity and CAD prices at the supermarket.</p>
+      </div>
+      <button id="installBtn" class="ghost hidden" type="button">Install</button>
+    </section>
+
+    <form id="addForm" class="add-card" autocomplete="off">
+      <label for="itemName">Add item</label>
+      <div class="add-row">
+        <input id="itemName" name="itemName" type="text" placeholder="Rice, beans, fish..." required />
+        <button type="submit">Add</button>
+      </div>
+      <p id="formMessage" class="message" role="status" aria-live="polite"></p>
+    </form>
+
+    <section class="list-card" aria-labelledby="list-title">
+      <div class="section-header">
+        <h2 id="list-title">Shopping items</h2>
+        <button id="clearBtn" class="danger" type="button">Clear all</button>
+      </div>
+
+      <div id="emptyState" class="empty-state">
+        <div class="empty-icon">🛒</div>
+        <p>Your grocery list is empty.</p>
+        <span>Add your first item above.</span>
+      </div>
+
+      <ul id="itemsList" class="items-list"></ul>
+
+      <div class="total-bar" aria-live="polite">
+        <span>Total</span>
+        <strong id="grandTotal">$0.00</strong>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
